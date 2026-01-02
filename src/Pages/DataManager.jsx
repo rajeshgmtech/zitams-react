@@ -189,9 +189,11 @@ const DataManager = () => {
   }
 
 
-  const onChangeCategory = (value) => { 
+  const onChangeCountry = (value) => {
 
+    setSelectedCountry(value);
 
+    
 
   }
 
@@ -301,23 +303,31 @@ const DataManager = () => {
 
 
   const getLoadCountryData = async () => {
-  
+
 
     try {
       const formData = new FormData();
-      formData.append("action", "getCountry");
 
-      const res = await fetch("http://192.168.1.43:3006/api/site/getCountryBySite", {
+      const res = await fetch("http://192.168.1.43:3006/api/country/getCountry", {
         method: "POST",
-        body: formData,
       });
 
       const json = await res.json();
 
       if (json.status === "OK") {
-        setCountryList(json.data.result);
-       
+        let newCountry = [];
+        (json.result).forEach((row, i) => {
+
+          newCountry.push({ label: row.code, value: row.zi_countryId })
+
+          console.log(row);
+          //newArray.push(row);
+        })
+        setCountryList(newCountry);
+
       }
+
+
     } catch (err) {
       console.error("Error fetching profile:", err);
     }
@@ -409,11 +419,11 @@ const DataManager = () => {
             <div className="p-0 w-[47%] md:w-auto flex-shrink-0 ">
               <div className="max-w-xs">
                 <CustomSelect
-                  label="Project Category"
-                  placeholder="Select category..."
-                  options={categories}
-                  value={category}
-                  onChange={(val) => onChangeCategory(val)}
+                  label="Country"
+                  placeholder="Select country..."
+                  options={countryList}
+                  value={selectedCountry}
+                  onChange={(val) => onChangeCountry(val)}
                 /*  error={!category ? "Field is required" : ""} */
                 />
 
@@ -423,7 +433,7 @@ const DataManager = () => {
             <div className="p-0 w-[47%] md:w-auto flex-shrink-0 ">
               <div className="max-w-xs">
                 <CustomSelect
-                  label="Country"
+                  label="Site"
                   placeholder="Select category..."
                   options={categories}
                   value={category}
