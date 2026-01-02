@@ -117,8 +117,9 @@ const DataManager = () => {
   const [limit, setLimit] = useState(10);
   const [refreshTable, setRefreshTable] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [countryList, setCountryList] = useState([]);
 
-  const getLoadData = async () => {
+  const getLoadData = async (fromDate, toDate) => {
     setLoading(true);
 
 
@@ -128,7 +129,7 @@ const DataManager = () => {
         const formData = new FormData();
         formData.append("action", "userReport");
         formData.append("token", '123456');
-        formData.append("startDate", '23-Dec-2025');
+        formData.append("startDate", fromDate);
         formData.append("endDate", toDate);
         formData.append("siteId", selectedSite);
         formData.append("countryId", selectedCountry);
@@ -187,8 +188,144 @@ const DataManager = () => {
 
   }
 
+
+  const onChangeCategory = (value) => { 
+
+
+
+  }
+
+  const onChangeFromDate = (value) => {
+
+    const toDateV = toDate;
+    const str = value;
+    console.log(str)
+    if (toDateV) {
+      const diff = moment(toDateV, "D-MMM-YYYY").diff(
+        moment(str, "D-MMM-YYYY"),
+        "days"
+      );
+      setFromDate(str);
+      if (isNaN(diff)) {
+        return;
+      }
+
+      if (diff > 31 || diff < 0) {
+        setToDate(null);
+        // fpTo.current?.clear(); // ✅ clears UI
+        setFromDate(str);
+        /*  toast.error(
+           (t) => (
+             <div className="flex items-start" >
+               <div>
+                 <div className="text-[19px] font-medium text-[#353945]" >
+                   Fail
+                 </div>
+                 < div className="text-[13px] font-normal text-[#777E90]" >
+                   Date range cannot exceed 31 days.
+                 </div>
+               </div>
+             </div>
+           ),
+           {
+             duration: 3000,
+             position: "top-right",
+             style: {
+               padding: "16px",
+               borderRadius: "8px",
+             },
+           }
+         ); */
+        return;
+      } else {
+        getLoadData(str, toDate)
+      }
+
+
+    } else {
+      setFromDate(str);
+      getLoadData(str, toDate)
+    }
+
+
+  }
+  const onChangeToDate = async (value) => {
+
+    const str = value;
+    console.log(str)
+    const fromDateV = fromDate;
+
+    if (!fromDateV) return;
+
+    const diff = moment(str, "D-MMM-YYYY").diff(
+      moment(fromDateV, "D-MMM-YYYY"),
+      "days"
+    );
+
+
+    setToDate(str);
+    if (isNaN(diff)) {
+      return;
+    }
+
+    if (diff > 31 || diff < 0) {
+      setToDate(null);
+      // fpTo.current?.clear();
+      /*  toast.error(
+         (t) => (
+           <div className="flex items-start" >
+             <div>
+               <div className="text-[19px] font-medium text-[#353945]" >
+                 Fail
+               </div>
+               < div className="text-[13px] font-normal text-[#777E90]" >
+                 Date range cannot exceed 31 days.
+               </div>
+             </div>
+           </div>
+         ),
+         {
+           duration: 3000,
+           position: "top-right",
+           style: {
+             padding: "16px",
+             borderRadius: "8px",
+           },
+         }
+       ); */
+      return;
+    } else {
+      getLoadData(fromDate, str)
+    }
+  }
+
+
+  const getLoadCountryData = async () => {
+  
+
+    try {
+      const formData = new FormData();
+      formData.append("action", "getCountry");
+
+      const res = await fetch("http://192.168.1.43:3006/api/site/getCountryBySite", {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json();
+
+      if (json.status === "OK") {
+        setCountryList(json.data.result);
+       
+      }
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  };
+
   useEffect(() => {
-    getLoadData();
+    getLoadData(fromDate, toDate);
+    getLoadCountryData();
   }, []);
 
 
@@ -222,12 +359,23 @@ const DataManager = () => {
 
             <div className="p-0 w-[47%] md:w-auto flex-shrink-0"  >
               <div className="max-w-xs">
-                <FlatPickerField
+                {/* <FlatPickerField
                   label="From Date"
                   placeholder="Select from date..."
                   type="date" // This triggers the browser's date picker
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  value={fromDate}
+                  onChange={(e) => onChangeFromDate(e)}
+                /> */}
+                <FlatPickerField
+                  label="From Date"
+                  placeholder="Select from date..."
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => onChangeFromDate(e)}
+                  options={{
+                    defaultDate: fromDate,
+                    dateFormat: "j-M-Y"
+                  }}
                 />
 
 
@@ -239,8 +387,12 @@ const DataManager = () => {
                   label="To Date"
                   placeholder="Select to date..."
                   type="date" // This triggers the browser's date picker
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  value={toDate}
+                  onChange={(e) => onChangeToDate(e)}
+                  options={{
+                    defaultDate: toDate,
+                    dateFormat: "j-M-Y"
+                  }}
                 />
 
 
@@ -261,7 +413,7 @@ const DataManager = () => {
                   placeholder="Select category..."
                   options={categories}
                   value={category}
-                  onChange={(val) => setCategory(val)}
+                  onChange={(val) => onChangeCategory(val)}
                 /*  error={!category ? "Field is required" : ""} */
                 />
 
@@ -271,7 +423,7 @@ const DataManager = () => {
             <div className="p-0 w-[47%] md:w-auto flex-shrink-0 ">
               <div className="max-w-xs">
                 <CustomSelect
-                  label="Project Category"
+                  label="Country"
                   placeholder="Select category..."
                   options={categories}
                   value={category}

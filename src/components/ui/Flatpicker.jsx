@@ -3,7 +3,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css'; // Essential styles
 import calendarIcon from '../../assets/images/calendar-askjohn.svg';
 
-const FlatPickerField = forwardRef(({ label, icon = true, options = {}, ...props }, ref) => {
+const FlatPickerField = forwardRef(({ label, icon = true, options = {},onChange, ...props }, ref) => {
   const internalRef = useRef(null);
 
   // Expose the internal input ref to the parent if they pass a ref
@@ -16,6 +16,11 @@ const FlatPickerField = forwardRef(({ label, icon = true, options = {}, ...props
         dateFormat: "Y-m-d",
         allowInput: true,
         ...options, // Allow overriding options from props
+           onChange: (selectedDates, dateStr) => {
+        if (onChange) {
+          onChange(dateStr); // send value back to React
+        }
+      }
       });
 
       // Cleanup on unmount
