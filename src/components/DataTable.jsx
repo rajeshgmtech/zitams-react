@@ -73,10 +73,10 @@ export default function DataTable({ columns, data, childColumns }) {
                         className="px-4 py-3 text-md text-primary-text font-medium"
                       >
                         {col.key === "status" ? (
-                          <StatusBadge status={row[col.key]} />
+                          <StatusBadge status={row[col.label]} />
                         ) : (
-                          row[col.key]
-                        )}
+                          row[col.label]
+                        )} 
                       </td>
                     ))}
 
@@ -126,14 +126,14 @@ export default function DataTable({ columns, data, childColumns }) {
                               </tr>
                             </thead>
                             <tbody>
-                              {row.files.map((file, idx) => (
+                              {row.dataArray.map((file, idx) => (
                                 <tr key={idx}>
                                   {childColumns.map((col) => (
                                     <td key={col.key} className="px-4 py-3">
                                       {col.key === "status" ? (
                                         <StatusBadge status={file[col.key]} />
                                       ) : (
-                                        file[col.key]
+                                        file[col.label]
                                       )}
                                     </td>
                                   ))}
@@ -182,7 +182,7 @@ export default function DataTable({ columns, data, childColumns }) {
 
               {openRow === actualIndex && (
                 <div className="mt-3 border-t pt-3 space-y-3">
-                  {row.files.map((file, i) => (
+                  {row.dataArray.map((file, i) => (
                     <div key={i} className="bg-gray-50 rounded-lg p-3">
                       {childColumns.map((col) => (
                         <div
@@ -192,9 +192,9 @@ export default function DataTable({ columns, data, childColumns }) {
                           <span className="text-gray-500">{col.label}</span>
                           <span>
                             {col.key === "status" ? (
-                              <StatusBadge status={file[col.key]} />
+                              <StatusBadge status={file[col.label]} />
                             ) : (
-                              file[col.key]
+                              file[col.label]
                             )}
                           </span>
                         </div>

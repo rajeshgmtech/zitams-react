@@ -1,33 +1,34 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CustomSelect from "../components/ui/customselect";
 import DatePickerField from "../components/ui/DatePickerField";
 import FlatPickerField from "../components/ui/flatpicker";
 import ExpandableTable from "../components/DataTable";
+import moment from 'moment';
 const columns = [
   { key: "sno", label: "S.No" },
   { key: "date", label: "Date" },
   { key: "country", label: "Country" },
   { key: "site", label: "Site Name" },
-  { key: "total", label: "Total" },
-  { key: "processed", label: "Processed" },
-  { key: "errors", label: "Business Errors" },
-  { key: "duplicate", label: "Duplicate" },
-  { key: "skipped", label: "Skipped" },
+  { key: "total", label: "Over All Count" },
+  { key: "processed", label: "Processed Count" },
+  { key: "errors", label: "Action Taken Count Yes" },
+  { key: "duplicate", label: "duplicateRawDataCount" },
+  { key: "skipped", label: "skippedRawDataCount" },
   { key: "status", label: "Status" },
 ];
 
 const childColumns = [
-  { key: "fileName", label: "Source File Name" },
-  { key: "total", label: "Total" },
-  { key: "processed", label: "Processed" },
-  { key: "errors", label: "Business Error" },
-  { key: "duplicate", label: "Duplicate" },
-  { key: "skipped", label: "Skipped" },
+  { key: "fileName", label: "File Name" },
+  { key: "total", label: "Over All Count" },
+  { key: "processed", label: "Processed Count" },
+  { key: "errors", label: "Action Taken Count Yes" },
+  { key: "duplicate", label: "duplicateRawDataCount" },
+  { key: "skipped", label: "skippedRawDataCount" },
   { key: "status", label: "Status" },
 ];
 
-const data = [
+/* const data = [
   {
     sno: 1,
     date: "27-Nov-2025",
@@ -93,22 +94,102 @@ const data = [
     ],
   },
 ];
-
+ */
 const DataManager = () => {
 
   const [date, setDate] = useState("");
+  const [data, setData] = useState([]);
   const [category, setCategory] = useState("");
+
 
   const categories = [
     { label: "Design", value: "design" },
     { label: "Development", value: "dev" }
   ];
-
-
-
-
-
   const [selectedDate, setSelectedDate] = useState("");
+
+
+
+  const [selectedSite, setSelectedSite] = useState('');
+  const [fromDate, setFromDate] = useState(moment().subtract(1, 'days').format('D-MMM-YYYY'));  // Default value
+  const [toDate, setToDate] = useState(moment().subtract(1, 'days').format('D-MMM-YYYY'));  // Default value
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [limit, setLimit] = useState(10);
+  const [refreshTable, setRefreshTable] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const getLoadData = async () => {
+    setLoading(true);
+
+
+    try {
+      if (fromDate != '' && toDate != '') {
+
+        const formData = new FormData();
+        formData.append("action", "userReport");
+        formData.append("token", '123456');
+        formData.append("startDate", '23-Dec-2025');
+        formData.append("endDate", toDate);
+        formData.append("siteId", selectedSite);
+        formData.append("countryId", selectedCountry);
+        /*  formData.append("limit", limit);
+         formData.append("page", page); */
+
+
+        const res = await fetch("http://192.168.1.43:3006/api/dataManager/userSiteReportByDate", {
+          method: "POST",
+          body: formData,
+        });
+
+        const json = await res.json();
+        console.log(json.result);
+        /*      console.log('json');
+             console.log(json);
+             if (json.status === "OK") { */
+
+        //setUserReport(json.data.result)
+        const report_new = json.result;
+
+        let newArray = [];
+
+        Object.entries(report_new).forEach(([key, value]) => {
+          const innerArray = value.data;
+          if (innerArray != null && innerArray.length > 0) {
+            (innerArray).forEach((row, i) => {
+              newArray.push(row);
+            })
+          }
+
+        });
+
+        console.log('newArray');
+        console.log(newArray);
+
+        setData(newArray);
+        /*    const keys = Object.keys(report_new);
+           setUserReportKey(keys);
+ 
+ 
+  
+         } */
+
+      }
+
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+    finally {
+      setLoading(false);
+
+      setPageLoading(false);
+    }
+
+
+  }
+
+  useEffect(() => {
+    getLoadData();
+  }, []);
 
 
   return (
@@ -120,7 +201,7 @@ const DataManager = () => {
           <div>
 
             <h1 className="text-3xl font-semibold whitespace-nowrap h1-poppins">
-             Data Manager
+              Data Manager
 
 
             </h1>
@@ -181,7 +262,7 @@ const DataManager = () => {
                   options={categories}
                   value={category}
                   onChange={(val) => setCategory(val)}
-                 /*  error={!category ? "Field is required" : ""} */
+                /*  error={!category ? "Field is required" : ""} */
                 />
 
 
@@ -215,14 +296,14 @@ const DataManager = () => {
         </div>
       </div >
       <div className=" rounded-2xl">
-         <ExpandableTable
-      columns={columns}
-      childColumns={childColumns}
-      data={data}
-    />
+        <ExpandableTable
+          columns={columns}
+          childColumns={childColumns}
+          data={data}
+        />
       </div>
 
-      
+
 
     </div>
   );
