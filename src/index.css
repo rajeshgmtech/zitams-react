@@ -1,0 +1,100 @@
+
+@import "tailwindcss";
+
+
+
+@font-face {
+  font-family: 'Audiowide';
+  src: url('./assets/fonts/Audiowide/Audiowide-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins/Poppins-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Poppins-Light';
+  src: url('./assets/fonts/Poppins/Poppins-Light.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Poppins-SemiBold';
+  src: url('./assets/fonts/Poppins/Poppins-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Poppins-Bold';
+  src: url('./assets/fonts/Poppins/Poppins-Bold.ttf') format('truetype');
+}
+
+
+
+
+@theme {
+  --color-primary-text: #212B60;
+  --color-dark-text: #181818;
+  --color-primary-bg: #212B60;
+  --color-light-bg: #eeeeee;
+  --color-neutral: #353945;
+  --color-content: #23262f;
+  --color-offwhite: #EFF3F6;
+  --color-activeblue: #004DB3;
+}
+
+@layer base {
+  html,
+  body {
+    font-family:  "Poppins" serif;
+    font-style: normal;
+    color: #23262f;
+  }
+  /* Type Scale */
+
+  .h1-audiowide {
+  font-family: "Audiowide", cursive;
+  font-weight: 400;
+}
+
+.h1-poppins {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+}
+.h1-poppins-bold {
+  font-family: "Poppins-Bold", sans-serif;
+  font-weight: 700;
+}
+
+  h1 {
+    font-size: 56px;
+    font-weight: 300;
+    line-height: 64px;
+    font-family: "Audiowide", sans-serif,"Poppins";
+  }
+  h2 {
+    font-size: 48px;
+    font-weight: 250;
+    line-height: 56px;
+    font-family: "Audiowide", sans-serif;
+  }
+  h3 {
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 40px;
+    font-family: "Audiowide", sans-serif;
+  }
+  h4 {
+    font-size: 28px;
+    font-weight: 250;
+    line-height: 36px;
+    font-family: "Audiowide", sans-serif;
+  }
+  h5 {
+    font-size: 24px;
+    font-weight: 250;
+    line-height: 32px;
+    font-family: "Audiowide", sans-serif;
+  }
+  h6 {
+    font-size: 20px;
+    font-weight: 250;
+    line-height: 28px;
+    font-family: "Audiowide", sans-serif;
+  }
+}
